@@ -45,7 +45,7 @@ fun Greeting(modifier: Modifier = Modifier) {
         listIds = mockListIds,
         ids = mockIds,
         names = mockNames,
-        modifier = Modifier.padding(top = 10.dp).fillMaxSize()
+        modifier = modifier
     )
 }
 
