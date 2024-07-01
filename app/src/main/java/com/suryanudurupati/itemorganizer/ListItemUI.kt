@@ -1,5 +1,6 @@
 package com.suryanudurupati.itemorganizer
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,14 +28,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import com.suryanudurupati.itemorganizer.ui.theme.ItemOrganizerTheme
 
-//TODO:: Convert this to data class
+//TODO:: Convert function params to data class
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListItemUI(
     modifier: Modifier = Modifier,
@@ -48,38 +51,39 @@ fun ListItemUI(
             .fillMaxSize()
             .padding(10.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            HeaderText(text = "List ID", modifier = modifier.padding(horizontal = 10.dp))
-            LazyColumn() {
-                items(listIds.size) { index ->
-                    Row(modifier = modifier.height((index+2) * height.dp)) {
-                        ListIdText(listId = listIds[index].toString())
-                    }
+        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+            stickyHeader {
+                HeaderText(text = "List ID", modifier = modifier.padding(horizontal = 10.dp))
+            }
+            items(listIds.size) { index ->
+                Row(modifier = modifier.height((index + 2) * height.dp)) {
+                    ListIdText(listId = listIds[index].toString())
                 }
             }
         }
         Row(modifier = modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                HeaderText(text = "ID", modifier = modifier
-                    .padding(horizontal = 10.dp)
-                    .onGloballyPositioned { layoutCoordinates ->
-                        height = layoutCoordinates.size.height
-                    })
-                LazyColumn {
-                    items(ids.size) { index ->
-                        ItemRow(item = ids[index].map { it.toString() })
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                stickyHeader {
+                    HeaderText(text = "ID", modifier = modifier
+                        .padding(horizontal = 10.dp)
+                        .onGloballyPositioned { layoutCoordinates ->
+                            height = layoutCoordinates.size.height
+                        })
+                }
+                items(ids.size) { index ->
+                    ItemRow(item = ids[index].map { it.toString() })
 
                     Spacer(modifier = Modifier.padding(10.dp))
-                    }
                 }
             }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                HeaderText(text = "Name", modifier = modifier.padding(horizontal = 10.dp))
-                LazyColumn {
-                    items(ids.size) { index ->
-                        ItemRow(item = names[index])
-                        Spacer(modifier = Modifier.padding(10.dp))
-                    }
+
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                stickyHeader {
+                    HeaderText(text = "Name", modifier = modifier.padding(horizontal = 10.dp))
+                }
+                items(ids.size) { index ->
+                    ItemRow(item = names[index])
+                    Spacer(modifier = Modifier.padding(10.dp))
                 }
             }
         }
@@ -102,6 +106,13 @@ fun ItemRow(modifier: Modifier = Modifier, item: List<String>) {
 fun ListIdText(modifier: Modifier = Modifier, listId: String) {
     Column(modifier = Modifier.padding(10.dp)) {
         Text(listId, modifier = modifier, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun HeaderText(modifier: Modifier = Modifier, text: String) {
+    Column(modifier = Modifier.padding(horizontal = 10.dp)) {
+        Text(text, modifier = modifier, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic)
     }
 }
 
