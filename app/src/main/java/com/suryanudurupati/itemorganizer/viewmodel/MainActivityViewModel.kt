@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.suryanudurupati.itemorganizer.Repository.ItemRepo
 import com.suryanudurupati.itemorganizer.model.Data
 import com.suryanudurupati.itemorganizer.model.FilteredItems
+import com.suryanudurupati.itemorganizer.model.GroupedItem
 import com.suryanudurupati.itemorganizer.model.ItemModel
 import com.suryanudurupati.itemorganizer.model.ItemsModel
 import kotlinx.coroutines.launch
@@ -24,6 +25,9 @@ class MainActivityViewModel : ViewModel() {
     private val _filteredItems = MutableLiveData<FilteredItems>()
     val filteredItems: LiveData<FilteredItems> get() = _filteredItems
 
+    private val _groupedItems = MutableLiveData<GroupedItem>()
+    val groupedItem: LiveData<GroupedItem> get() = _groupedItems
+
     fun loadItems() {
         viewModelScope.launch {
             _isLoading.postValue(true)
@@ -35,7 +39,6 @@ class MainActivityViewModel : ViewModel() {
     }
 
     private fun filterData(items: List<ItemModel>) {
-        val filterItems = items.filter{ !it.name.isNullOrBlank() }.groupBy {it.listId}
 
         val filterItems2 = items.filter{it.name != null && it.name.isNotBlank()}
             .sortedWith(compareBy<ItemModel> { it.listId }.thenBy { it.id })
@@ -56,6 +59,6 @@ class MainActivityViewModel : ViewModel() {
 //        val ids = filterItems.values.map{it.map{ item -> item.id }}
 //        val names = filterItems.values.map{it.map{ item -> item.name }}
 
-        _filteredItems.postValue(FilteredItems(listId = listIds, id = ids, name = names))
+        _groupedItems.postValue(GroupedItem(listId, listIds))
     }
 }
