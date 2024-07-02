@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,12 +23,17 @@ fun HeaderText(modifier: Modifier = Modifier, text: String) {
 }
 
 @Composable
-fun Header(modifier: Modifier = Modifier) {
+fun Header(
+    modifier: Modifier = Modifier,
+    groupedItem: GroupedItem
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        HeaderText(text = "List ID")
+        Column {
+            HeaderText(text = "List ID")
+        }
         HeaderText(text = "ID")
         HeaderText(text = "Name")
     }

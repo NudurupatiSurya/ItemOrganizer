@@ -18,9 +18,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.suryanudurupati.itemorganizer.model.GroupedItem
+import com.suryanudurupati.itemorganizer.ui.itemlist.Header
+import com.suryanudurupati.itemorganizer.ui.itemlist.ItemList
 import com.suryanudurupati.itemorganizer.ui.itemlist.ItemsListUI
-import com.suryanudurupati.itemorganizer.ui.itemlist.Search
 import com.suryanudurupati.itemorganizer.ui.theme.ItemOrganizerTheme
 import com.suryanudurupati.itemorganizer.viewmodel.MainActivityViewModel
 
@@ -33,38 +35,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    val viewModel: MainActivityViewModel = viewModel()
+                    val groupedItems by viewModel.groupedItem.observeAsState()
+
+                    // Load items when the UI is set
+                    if (groupedItems == null) {
+                        viewModel.loadItems()
+                    }
+
+                    groupedItems?.let {
+                        ItemList(viewModel)
+                    }
                 }
             }
         }
     }
 }
-
-@Composable
-fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()){
-
-    LaunchedEffect(Unit) {
-        viewModel.loadItems()
-    }
-
-    val isLoading by viewModel.isLoading.observeAsState(false)
-
-    if (isLoading) {
-        CustomProgressIndicator()
-    } else {
-        val groupedItem by viewModel.groupedItem.observeAsState(
-            GroupedItem(
-                listId = emptyList(),
-                listIds = emptyList()
-            )
-        )
-        Column(Modifier.fillMaxWidth()) {
-            Search()
-            ItemsListUI(groupedItem = groupedItem)
-        }
-    }
-}
-
 
 @Composable
 fun CustomProgressIndicator() {

@@ -20,7 +20,6 @@ data class FilteredItems(
     val name: List<List<String?>>
 )
 
-typealias GroupedItems = List<GroupedItem>
 
 data class GroupedItem(
     val listId: List<Int>,
@@ -31,3 +30,5 @@ data class Data(
     val ids: List<Int>,
     val names: List<String?>
 )
+
+data class Item(val listId: Int, val id: Int, val name: String?)

@@ -9,6 +9,7 @@ import com.suryanudurupati.itemorganizer.Repository.ItemRepo
 import com.suryanudurupati.itemorganizer.model.Data
 import com.suryanudurupati.itemorganizer.model.FilteredItems
 import com.suryanudurupati.itemorganizer.model.GroupedItem
+import com.suryanudurupati.itemorganizer.model.Item
 import com.suryanudurupati.itemorganizer.model.ItemModel
 import com.suryanudurupati.itemorganizer.model.ItemsModel
 import kotlinx.coroutines.launch
@@ -16,31 +17,30 @@ import kotlinx.coroutines.launch
 class MainActivityViewModel : ViewModel() {
 
     private val repo = ItemRepo()
-    private val _items = MutableLiveData<ItemsModel>()
+    private val _items = MutableLiveData<List<ItemModel>>()
     private val _isLoading = MutableLiveData<Boolean>(true)
 
-    val items: LiveData<ItemsModel> get() = _items
+    val items: LiveData<List<ItemModel>> get() = _items
     val isLoading: LiveData<Boolean> get() = _isLoading
-
-    private val _filteredItems = MutableLiveData<FilteredItems>()
-    val filteredItems: LiveData<FilteredItems> get() = _filteredItems
 
     private val _groupedItems = MutableLiveData<GroupedItem>()
     val groupedItem: LiveData<GroupedItem> get() = _groupedItems
+
+    private val _transformedItems = MutableLiveData<Map<Int, List<Item>>>()
+    val transformedItems: LiveData<Map<Int, List<Item>>> get() = _transformedItems
 
     fun loadItems() {
         viewModelScope.launch {
             _isLoading.postValue(true)
             val result = repo.getItems()
             _items.postValue(result)
-            filterData(result)
+            groupItems(result)
             _isLoading.postValue(false)
         }
     }
 
-    private fun filterData(items: List<ItemModel>) {
-
-        val filterItems2 = items.filter{it.name != null && it.name.isNotBlank()}
+    private fun groupItems(items: List<ItemModel>) {
+        val filterItems2 = items.filter { it.name != null && it.name.isNotBlank() }
             .sortedWith(compareBy<ItemModel> { it.listId }.thenBy { it.id })
 
         val groupedItems = filterItems2.groupBy { it.listId }
@@ -60,5 +60,17 @@ class MainActivityViewModel : ViewModel() {
 //        val names = filterItems.values.map{it.map{ item -> item.name }}
 
         _groupedItems.postValue(GroupedItem(listId, listIds))
+        _transformedItems.postValue(transformData(GroupedItem(listId, listIds)))
+    }
+
+    private fun transformData(groupedItem: GroupedItem): Map<Int, List<Item>> {
+        val items = mutableListOf<Item>()
+        groupedItem.listId.forEachIndexed { index, listId ->
+            val data = groupedItem.listIds[index]
+            data.ids.forEachIndexed { idx, id ->
+                items.add(Item(listId = listId, id = id, name = data.names[idx]))
+            }
+        }
+        return items.groupBy { it.listId }
     }
 }
