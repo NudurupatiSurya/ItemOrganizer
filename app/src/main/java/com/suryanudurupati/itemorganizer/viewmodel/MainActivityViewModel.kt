@@ -29,6 +29,12 @@ class MainActivityViewModel : ViewModel() {
     private val _transformedItems = MutableLiveData<Map<Int, List<Item>>>()
     val transformedItems: LiveData<Map<Int, List<Item>>> get() = _transformedItems
 
+    private val _filteredItems = MutableLiveData<Map<Int, List<Item>>>()
+    val filteredItems: LiveData<Map<Int, List<Item>>> get() = _filteredItems
+
+    private val _selectedListId = MutableLiveData<Int?>()
+    val selectedListId: LiveData<Int?> get() = _selectedListId
+
     fun loadItems() {
         viewModelScope.launch {
             _isLoading.postValue(true)
@@ -52,15 +58,9 @@ class MainActivityViewModel : ViewModel() {
                 names = itemList.map { it.name }
             )
         }
-
-//        val groupedItem = GroupedItem(listId = listId, listIds = listIds)
-
-//        val listIds = filterItems.keys.toList()
-//        val ids = filterItems.values.map{it.map{ item -> item.id }}
-//        val names = filterItems.values.map{it.map{ item -> item.name }}
-
         _groupedItems.postValue(GroupedItem(listId, listIds))
         _transformedItems.postValue(transformData(GroupedItem(listId, listIds)))
+        _filteredItems.postValue(transformData(GroupedItem(listId, listIds)))
     }
 
     private fun transformData(groupedItem: GroupedItem): Map<Int, List<Item>> {
@@ -72,5 +72,14 @@ class MainActivityViewModel : ViewModel() {
             }
         }
         return items.groupBy { it.listId }
+    }
+
+    fun onListIdSelected(listId: Int?) {
+        _selectedListId.value = listId
+        _filteredItems.value = if (listId == null) {
+            _transformedItems.value
+        } else {
+            _transformedItems.value?.filter { it.key == listId }
+        }
     }
 }
