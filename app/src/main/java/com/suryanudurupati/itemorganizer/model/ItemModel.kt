@@ -14,13 +14,6 @@ data class ItemModel(
     val name: String?
 )
 
-data class FilteredItems(
-    val listId: List<Int>,
-    val id: List<List<Int>>,
-    val name: List<List<String?>>
-)
-
-
 data class GroupedItem(
     val listId: List<Int>,
     val listIds: List<Data>

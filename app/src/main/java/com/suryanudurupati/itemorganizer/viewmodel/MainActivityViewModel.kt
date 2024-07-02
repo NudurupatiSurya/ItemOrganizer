@@ -7,15 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.suryanudurupati.itemorganizer.Repository.ItemRepo
 import com.suryanudurupati.itemorganizer.model.Data
-import com.suryanudurupati.itemorganizer.model.FilteredItems
 import com.suryanudurupati.itemorganizer.model.GroupedItem
 import com.suryanudurupati.itemorganizer.model.Item
 import com.suryanudurupati.itemorganizer.model.ItemModel
 import com.suryanudurupati.itemorganizer.model.ItemsModel
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivityViewModel : ViewModel() {
-
     private val repo = ItemRepo()
     private val _items = MutableLiveData<List<ItemModel>>()
     private val _isLoading = MutableLiveData<Boolean>(true)
@@ -34,6 +33,9 @@ class MainActivityViewModel : ViewModel() {
 
     private val _selectedListId = MutableLiveData<Int?>()
     val selectedListId: LiveData<Int?> get() = _selectedListId
+
+    private val _searchQuery = MutableLiveData<String>()
+    val searchQuery: LiveData<String> get() = _searchQuery
 
     fun loadItems() {
         viewModelScope.launch {
@@ -76,10 +78,23 @@ class MainActivityViewModel : ViewModel() {
 
     fun onListIdSelected(listId: Int?) {
         _selectedListId.value = listId
-        _filteredItems.value = if (listId == null) {
-            _transformedItems.value
-        } else {
-            _transformedItems.value?.filter { it.key == listId }
+        filterItems()
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+        filterItems()
+    }
+
+    private fun filterItems() {
+        val listId = _selectedListId.value
+        val query = _searchQuery.value?.lowercase(Locale.ROOT) ?: ""
+
+        _filteredItems.value = _transformedItems.value?.mapValues { entry ->
+            entry.value.filter { item ->
+                (listId == null || item.listId == listId) && item.name?.lowercase(Locale.ROOT)
+                    ?.contains(query) == true
+            }
         }
     }
 }
