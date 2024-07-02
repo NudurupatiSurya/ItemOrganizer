@@ -1,28 +1,19 @@
 package com.suryanudurupati.itemorganizer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.suryanudurupati.itemorganizer.model.FilteredItems
 import com.suryanudurupati.itemorganizer.ui.theme.ItemOrganizerTheme
 
 //TODO:: Convert function params to data class
@@ -41,9 +33,7 @@ import com.suryanudurupati.itemorganizer.ui.theme.ItemOrganizerTheme
 @Composable
 fun ListItemUI(
     modifier: Modifier = Modifier,
-    listIds: List<Int>,
-    ids: List<List<Int>>,
-    names: List<List<String>>
+    filteredItems: FilteredItems
 ) {
     var height by remember { mutableIntStateOf(100) }
     Row(
@@ -53,26 +43,20 @@ fun ListItemUI(
     ) {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
             stickyHeader {
-                HeaderText(text = "List ID", modifier = modifier.padding(horizontal = 10.dp))
+
             }
-            items(listIds.size) { index ->
+            items(filteredItems.listId.size) { index ->
                 Row(modifier = modifier.height((index + 2) * height.dp)) {
-                    ListIdText(listId = listIds[index].toString())
+                    ListIdText(listId = filteredItems.listId[index].toString())
                 }
             }
         }
         Row(modifier = modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly) {
             LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                 stickyHeader {
-                    HeaderText(text = "ID", modifier = modifier
-                        .padding(horizontal = 10.dp)
-                        .onGloballyPositioned { layoutCoordinates ->
-                            height = layoutCoordinates.size.height
-                        })
                 }
-                items(ids.size) { index ->
-                    ItemRow(item = ids[index].map { it.toString() })
-
+                items(filteredItems.id.size) { index ->
+                    ItemRow(item = filteredItems.id[index].map { it.toString() })
                     Spacer(modifier = Modifier.padding(10.dp))
                 }
             }
@@ -81,8 +65,8 @@ fun ListItemUI(
                 stickyHeader {
                     HeaderText(text = "Name", modifier = modifier.padding(horizontal = 10.dp))
                 }
-                items(ids.size) { index ->
-                    ItemRow(item = names[index])
+                items(filteredItems.name.size) { index ->
+                    ItemRow(item = filteredItems.name[index])
                     Spacer(modifier = Modifier.padding(10.dp))
                 }
             }
@@ -91,11 +75,20 @@ fun ListItemUI(
 }
 
 @Composable
-fun ItemRow(modifier: Modifier = Modifier, item: List<String>) {
+fun Header(modifier: Modifier = Modifier){
+    Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+        HeaderText(text = "List ID", modifier = modifier.padding(horizontal = 10.dp))
+        HeaderText(text = "ID", modifier = modifier.padding(horizontal = 10.dp))
+        HeaderText(text = "Name", modifier = modifier.padding(horizontal = 10.dp))
+    }
+}
+
+@Composable
+fun ItemRow(modifier: Modifier = Modifier, item: List<String?>) {
     Column {
         for (i in item.indices) {
             Row {
-                Text(item[i], modifier = modifier.padding(5.dp))
+                Text(item[i]!!, modifier = modifier.padding(5.dp))
             }
         }
 
@@ -128,7 +121,7 @@ fun DataItemUIPreview() {
         )
 
         Column {
-            ListItemUI(listIds = mockListId, ids = mockId, names = mockName)
+            ListItemUI(filteredItems = FilteredItems(mockListId, mockId, mockName))
         }
     }
 }

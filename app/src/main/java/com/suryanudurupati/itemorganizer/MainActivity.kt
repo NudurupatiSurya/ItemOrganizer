@@ -3,19 +3,23 @@ package com.suryanudurupati.itemorganizer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposableTarget
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.suryanudurupati.itemorganizer.model.FilteredItems
 import com.suryanudurupati.itemorganizer.ui.theme.ItemOrganizerTheme
+import com.suryanudurupati.itemorganizer.viewmodel.MainActivityViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting()
+                    MainScreen()
                 }
             }
         }
@@ -34,25 +38,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
-    val mockListIds = listOf(1, 2)
-    val mockIds = listOf(listOf(753, 754, 755), listOf(855, 856, 857))
-    val mockNames = listOf(
-        listOf("Item 753", "Item 754", "Item 755"),
-        listOf("Item 855", "Item 856", "Item 857")
-    )
-    ListItemUI(
-        listIds = mockListIds,
-        ids = mockIds,
-        names = mockNames,
-        modifier = modifier
-    )
+fun MainScreen(viewModel: MainActivityViewModel = MainActivityViewModel()){
+
+    LaunchedEffect(Unit) {
+        viewModel.loadItems()
+    }
+
+    val isLoading by viewModel.isLoading.observeAsState(false)
+
+    if (isLoading) {
+        CustomProgressIndicator()
+    } else {
+        val filteredItems by viewModel.filteredItems.observeAsState(
+            FilteredItems(
+                listId = emptyList(),
+                id = emptyList(),
+                name = emptyList()
+            )
+        )
+
+        ListItemUI(filteredItems = FilteredItems(filteredItems.listId, filteredItems.id, filteredItems.name))
+    }
 }
 
-@Preview(showBackground = true)
+
 @Composable
-fun GreetingPreview() {
+fun CustomProgressIndicator() {
+    Column(verticalArrangement = Arrangement.Center) {
+        Row(horizontalArrangement = Arrangement.Center) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CustomProgressIndicatorPreview() {
     ItemOrganizerTheme {
-        Greeting()
+        CustomProgressIndicator()
     }
 }
