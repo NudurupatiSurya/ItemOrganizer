@@ -62,7 +62,7 @@ fun ItemList(viewModel: MainActivityViewModel = viewModel()) {
             Header()
             LazyColumn(state = listState, modifier = Modifier.padding(16.dp)) {
                 filteredItems.forEach { (listId, items) ->
-                    stickyHeader {
+                    item {
                         ListIdRow(listId)
                     }
                     items(items) { item ->

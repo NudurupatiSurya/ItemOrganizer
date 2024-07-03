@@ -1,4 +1,4 @@
-package com.suryanudurupati.itemorganizer.utils
+package com.suryanudurupati.itemorganizer.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

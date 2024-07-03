@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.suryanudurupati.itemorganizer.Repository.ItemRepo
+import com.suryanudurupati.itemorganizer.repository.ItemRepo
 import com.suryanudurupati.itemorganizer.model.Data
 import com.suryanudurupati.itemorganizer.model.GroupedItem
 import com.suryanudurupati.itemorganizer.model.Item
@@ -49,7 +49,7 @@ class MainActivityViewModel : ViewModel() {
     // filtering/grouping data by ListID, sorted by Name and removed null or blank names
     private fun groupItems(items: List<ItemModel>) {
         val filterItems2 = items.filter { !it.name.isNullOrBlank() }
-            .sortedWith(compareBy<ItemModel> { it.listId }.thenBy { it.id })
+            .sortedWith(compareBy<ItemModel> { it.listId }.thenBy { it.name })
 
         val groupedItems = filterItems2.groupBy { it.listId }
 

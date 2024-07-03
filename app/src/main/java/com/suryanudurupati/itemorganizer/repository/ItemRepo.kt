@@ -1,8 +1,7 @@
-package com.suryanudurupati.itemorganizer.Repository
+package com.suryanudurupati.itemorganizer.repository
 
-import com.suryanudurupati.itemorganizer.model.ItemModel
 import com.suryanudurupati.itemorganizer.model.ItemsModel
-import com.suryanudurupati.itemorganizer.utils.RetrofitObject
+import com.suryanudurupati.itemorganizer.network.RetrofitObject
 
 class ItemRepo {
 
