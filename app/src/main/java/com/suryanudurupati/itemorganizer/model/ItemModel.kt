@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 typealias ItemsModel = List<ItemModel>
 
-
 data class ItemModel(
     @SerializedName("id")
     val id: Int,

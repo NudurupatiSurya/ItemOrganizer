@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ListIdFilter(listIds: List<Int>, selectedListId: Int?, onListIdSelected: (Int?) -> Unit) {
+fun ListIdFilter(listIds: List<Int>, onListIdSelected: (Int?) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("All")}
 

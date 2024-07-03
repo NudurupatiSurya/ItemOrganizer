@@ -10,13 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -32,19 +27,16 @@ import com.suryanudurupati.itemorganizer.ui.mainscreen.components.ListIdFilter
 import com.suryanudurupati.itemorganizer.ui.mainscreen.components.ScrollToTopButton
 import com.suryanudurupati.itemorganizer.ui.mainscreen.components.SearchBar
 import com.suryanudurupati.itemorganizer.viewmodel.MainActivityViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ItemList(viewModel: MainActivityViewModel = viewModel()) {
-    val transformedItems by viewModel.transformedItems.observeAsState(emptyMap())
     val filteredItems by viewModel.filteredItems.observeAsState(emptyMap())
     val selectedListId by viewModel.selectedListId.observeAsState()
     val searchQuery by viewModel.searchQuery.observeAsState("")
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val listIds = transformedItems.keys.toList()
+    val listIds = filteredItems.keys.toList()
     val showButton by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex > 0
@@ -63,7 +55,7 @@ fun ItemList(viewModel: MainActivityViewModel = viewModel()) {
                     viewModel.onSearchQueryChanged(query)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                ListIdFilter(listIds, selectedListId) { listId ->
+                ListIdFilter(listIds) { listId ->
                     viewModel.onListIdSelected(listId)
                 }
             }
@@ -80,11 +72,13 @@ fun ItemList(viewModel: MainActivityViewModel = viewModel()) {
             }
         }
         if (showButton) {
-            ScrollToTopButton(coroutineScope = coroutineScope,
+            ScrollToTopButton(
+                coroutineScope = coroutineScope,
                 listState = listState,
                 modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(50.dp))
+                    .align(Alignment.BottomStart)
+                    .padding(50.dp)
+            )
         }
     }
 }

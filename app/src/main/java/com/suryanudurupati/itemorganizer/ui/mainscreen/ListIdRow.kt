@@ -28,10 +28,10 @@ fun ListIdRow(listId: Int) {
         Text(
             text = "",
             modifier = Modifier.weight(1f)
-        )
+        ) // Placeholder of ID
         Text(
             text = "",
             modifier = Modifier.weight(1f)
-        )
+        ) // Placeholder of Name
     }
 }
